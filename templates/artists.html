@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Groupie Trackers</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/artists">Artists</a></li>
+                <li><a href="/locations">Locations</a></li>
+                <li><a href="/dates">Dates</a></li>
+                <li><a href="/relations">Relations</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{ define "content" }}
+        <h1>Artists</h1>
+        <div class="artist-grid">
+            {{ range . }}
+            <div class="artist-card">
+                <img src="{{ .Image }}" alt="{{ .Name }}">
+                <h3>{{ .Name }}</h3>
+                <p>ID: {{ .ID }}</p>
+                <p>Members: {{ range .Members }}{{ . }}, {{ end }}</p>
+                <p>Created At: {{ .CreatedAt }}</p>
+                <p>First Album: {{ .FirstAlbum }}</p>
+                <p>Concerts:</p>
+                <ul>
+                    {{ range .Concerts }}
+                    <li>{{ . }}</li>
+                    {{ end }}
+                </ul>
+                <p>Concert Dates:</p>
+                <ul>
+                    {{ range .ConcertDates }}
+                    <li>{{ . }}</li>
+                    {{ end }}
+                </ul>
+            </div>
+            {{ end }}
+        </div>
+        {{ end }}
+        
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Groupie Trackers</p>
+    </footer>
+</body>
+</html>
