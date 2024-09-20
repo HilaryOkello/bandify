@@ -11,7 +11,7 @@ func DatesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render the dates page with the fetched data
-	if err := templates.ExecuteTemplate(w, "dates.html", dates); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "dates.html", dates); err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 	}
 }

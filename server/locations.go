@@ -11,7 +11,7 @@ func LocationsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render the locations page with the fetched data
-	if err := templates.ExecuteTemplate(w, "locations.html", locations); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "locations.html", locations); err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 	}
 }

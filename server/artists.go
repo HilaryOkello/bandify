@@ -14,20 +14,15 @@ func ArtistsHandler(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	// Get the selected visualization type from the query parameters
-	visualizationType := r.URL.Query().Get("type")
-
-	// Render the artists page with the fetched data and selected visualization type
-	if err := templates.ExecuteTemplate(w, "artists.html", struct {
-		Artists           []Artist
-		VisualizationType string
-	}{
-		Artists:           artists,
-		VisualizationType: visualizationType,
-	}); err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-	}
+	data := struct {
+        Title string
+		Data []Artist
+    }{
+        Title: "Groupie Trackers - Artists",
+		Data: artists,
+    }
+	
+	renderTemplate(w, "artists.html", data)
 }
 
 // FetchArtists retrieves artists data from the API and returns it as a slice of Artist structs.
@@ -47,7 +42,7 @@ func fetchData(url string, result interface{}) error {
 	if response.StatusCode != http.StatusOK {
 		return fmt.Errorf("error: received status code %d", response.StatusCode)
 	}
-	body, err := io.ReadAll(response.Body) // Updated to use io.ReadAll
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return fmt.Errorf("error reading response body: %w", err)
 	}

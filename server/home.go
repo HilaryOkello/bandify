@@ -5,7 +5,13 @@ import (
 	"net/http"
 )
 
-var templates = template.Must(template.ParseGlob("templates/*.html"))
+var tmpl *template.Template
+
+// Initialize templates using ParseGlob
+func init() {
+    tmpl = template.Must(template.ParseGlob("templates/*.html"))
+}
+
 
 // Home handler
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -13,7 +19,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, r, http.StatusNotFound)
 		return
 	}
-	if err := templates.ExecuteTemplate(w, "home.html", nil); err != nil {
-		ErrorHandler(w, r, http.StatusInternalServerError)
-	}
+
+	data := struct {
+        Title string
+    }{
+        Title: "Groupie Trackers - Home",
+    }
+
+	renderTemplate(w, "index.html", data)
 }

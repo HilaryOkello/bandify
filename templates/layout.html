@@ -1,7 +1,8 @@
+<!-- templates/layout.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Groupie Trackers</title>
+    <title>{{ .Title }}</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -10,21 +11,15 @@
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/artists">Artists</a></li>
-                <li><a href="/locations">Locations</a></li>
+                <!-- <li><a href="/locations">Locations</a></li>
                 <li><a href="/dates">Dates</a></li>
-                <li><a href="/relations">Relations</a></li>
+                <li><a href="/relations">Relations</a></li> -->
             </ul>
         </nav>
     </header>
 
     <main>
-        {{ define "content" }}
-        <h1>Dates</h1>
-        <ul class="date-list">
-            {{ range . }}
-            <li>{{ . }}</li>
-            {{ end }}
-        </ul>
+        {{ block "content" . }}{{ end }}
     </main>
 
     <footer>

@@ -11,7 +11,7 @@ func RelationsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render the relations page with the fetched data
-	if err := templates.ExecuteTemplate(w, "relations.html", relations); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "relations.html", relations); err != nil {
 		ErrorHandler(w, r, http.StatusInternalServerError)
 	}
 }
