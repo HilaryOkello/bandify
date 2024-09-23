@@ -26,7 +26,5 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	}
 
 	// Render the error page using the errors.html template
-	if err := tmpl.ExecuteTemplate(w, "errors.html", data); err != nil {
-		http.Error(w, "500 Internal Server Error", http.StatusInternalServerError)
-	}
+	renderTemplate(w, "error.html", data)
 }

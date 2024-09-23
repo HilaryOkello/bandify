@@ -1,5 +1,22 @@
 <!-- templates/artists.html -->
 {{ define "content" }}
-<h1>Welcome to the Groupie Trackers App!</h1>
-<p>Explore information about your favorite artists, their locations, and tour dates.</p>
+<div class="landing-wrapper">
+    <div class="landing">
+        <h1> Explore All Your Fav Artists in One Place</h1>
+    </div>
+    {{ range .GroupArtists }}
+    <div class="groups-artists">{{ .Name}}</div>
+    {{ end }}
+    {{ range .SingleArtists }}
+    <div class="single-artists">{{ .Name}}</div>
+    {{ end }}
+    {{ range .NewArtists }}
+    <div class="new-artists">{{ .Name}}</div>
+    {{ end }}
+    {{ range .ClassicArtists }}
+    <div class="classic-artists">{{ .Name}}</div>
+    {{ end }}
+</div>
+<div class="other-artists">
+</div>
 {{ end }}

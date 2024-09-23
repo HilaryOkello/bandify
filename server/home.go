@@ -1,30 +1,27 @@
 package server
 
 import (
-	"html/template"
 	"net/http"
 )
 
-var tmpl *template.Template
-
-// Initialize templates using ParseGlob
-func init() {
-    tmpl = template.Must(template.ParseGlob("templates/*.html"))
-}
-
-
-// Home handler
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		ErrorHandler(w, r, http.StatusNotFound)
 		return
 	}
 
+	if r.Method != "GET" {
+		ErrorHandler(w, r, http.StatusMethodNotAllowed)
+		return
+	}
+
 	data := struct {
-        Title string
-    }{
-        Title: "Groupie Trackers - Home",
-    }
+		Title   string
+		Artists []Artist
+	}{
+		Title:   "Groupie Trackers - Home",
+		Artists: artists,
+	}
 
 	renderTemplate(w, "index.html", data)
 }
