@@ -16,11 +16,11 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Title   string
-		Artists []Artist
+		Title string
+		Data  []Artist
 	}{
-		Title:   "Groupie Trackers - Home",
-		Artists: artists,
+		Title: "Groupie Trackers - Artists",
+		Data:  artists,
 	}
 
 	renderTemplate(w, "index.html", data)

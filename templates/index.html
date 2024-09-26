@@ -1,22 +1,15 @@
-<!-- templates/artists.html -->
+<!-- templates/in.html -->
 {{ define "content" }}
-<div class="landing-wrapper">
-    <div class="landing">
-        <h1> Explore All Your Fav Artists in One Place</h1>
+<div class="artist-grid">
+    {{ range .Data }}
+    <div class="artist-card">
+        <img src="{{ .Image }}" alt="{{ .Name }}" class="">
+        <h3>{{ .Name }}</h3>
+        <p>Members: {{ range .Members }}{{ . }}, {{ end }}</p>
+        <p>Created At: {{ .CreationDate }}</p>
+        <p>First Album: {{ .FirstAlbum }}</p>
+        <a href="/{{ .Id }}" class="details-button">See Details</a>
     </div>
-    {{ range .GroupArtists }}
-    <div class="groups-artists">{{ .Name}}</div>
     {{ end }}
-    {{ range .SingleArtists }}
-    <div class="single-artists">{{ .Name}}</div>
-    {{ end }}
-    {{ range .NewArtists }}
-    <div class="new-artists">{{ .Name}}</div>
-    {{ end }}
-    {{ range .ClassicArtists }}
-    <div class="classic-artists">{{ .Name}}</div>
-    {{ end }}
-</div>
-<div class="other-artists">
 </div>
 {{ end }}
