@@ -1,5 +1,15 @@
-<!-- templates/artists.html -->
+<!-- templates/in.html -->
 {{ define "content" }}
-<h1>Welcome to the Groupie Trackers App!</h1>
-<p>Explore information about your favorite artists, their locations, and tour dates.</p>
+<div class="artist-grid">
+    {{ range .Data }}
+    <div class="artist-card">
+        <img src="{{ .Image }}" alt="{{ .Name }}" class="">
+        <h3>{{ .Name }}</h3>
+        <p>Members: {{ range .Members }}{{ . }}, {{ end }}</p>
+        <p>Created At: {{ .CreationDate }}</p>
+        <p>First Album: {{ .FirstAlbum }}</p>
+        <a href="/{{ .Id }}" class="details-button">See Details</a>
+    </div>
+    {{ end }}
+</div>
 {{ end }}

@@ -1,7 +1,11 @@
 package server
 
 import (
+	"encoding/json"
+	"fmt"
 	"html/template"
+	"io"
+	"log"
 	"net/http"
 	"path/filepath"
 )
@@ -13,29 +17,7 @@ const (
 	relationsURL = "https://groupietrackers.herokuapp.com/api/relation"
 )
 
-type Artist struct {
-	Id           int      `json:"id"`
-	Image        string   `json:"image"`
-	Name         string   `json:"name"`
-	Members      []string `json:"members"`
-	CreationDate int      `json:"creationDate"`
-	FirstAlbum   string   `json:"firstAlbum"`
-	Locations    string   `json:"locations"`
-	ConcertDates string   `json:"concertDates"`
-	Relations    string   `json:"relations"`
-}
-
-type Location struct {
-	Location string `json:"location"`
-}
-type Date struct {
-	Date string `json:"date"`
-}
-type Relation struct {
-	ArtistID   int `json:"artistId"`
-	LocationID int `json:"locationId"`
-	DateID     int `json:"dateId"`
-}
+var artists []Artist
 
 var templates map[string]*template.Template
 
@@ -45,7 +27,7 @@ func init() {
 	layout := "templates/layout.html"
 	pages, err := filepath.Glob("templates/*.html")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	for _, page := range pages {
@@ -53,6 +35,10 @@ func init() {
 			files := []string{layout, page}
 			templates[filepath.Base(page)] = template.Must(template.ParseFiles(files...))
 		}
+	}
+
+	if err := fetchData(artistsURL, &artists); err != nil {
+		log.Fatal("Could not fetch artists")
 	}
 }
 
@@ -67,4 +53,24 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+// fetchData is a helper function that retrieves data from the specified API URL and unmarshals it into the provided interface.
+func fetchData(url string, result interface{}) error {
+	response, err := http.Get(url)
+	if err != nil {
+		return fmt.Errorf("error fetching data: %w", err)
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("error: received status code %d", response.StatusCode)
+	}
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return fmt.Errorf("error reading response body: %w", err)
+	}
+	if err := json.Unmarshal(body, result); err != nil {
+		return fmt.Errorf("error unmarshalling JSON: %w", err)
+	}
+	return nil
 }
