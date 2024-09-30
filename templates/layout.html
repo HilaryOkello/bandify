@@ -1,0 +1,30 @@
+<!-- templates/layout.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ .Title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <div class = "nav-links">
+                    <li><a href="/">Home</a></li>
+                </div>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{ block "content" . }}{{ end }}
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Groupie Trackers</p>
+    </footer>
+</body>
+
+</html>

@@ -1,88 +1,63 @@
 /* General Styles */
+
+
+/* Import Poppins Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    width: 80vw;
+    margin: 0 auto;
     padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: #000000;
+    color: #ffffff;
 }
 
-header {
-    background: #35424a;
-    color: #ffffff;
-    padding: 10px 0;
-}
 
 nav ul {
-    list-style: none;
-    padding: 0;
+    list-style-type: none;
+    font-size: 2rem;
+    margin: 0;
+    padding:20px 0 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 nav ul li {
     display: inline;
-    margin-right: 20px;
 }
+
+.nav-links {
+    margin-right: auto;
+    /* Push Home & Artists to the left */
+}
+
 
 nav ul li a {
     color: #ffffff;
     text-decoration: none;
+    font-weight: 800;
+}
+
+nav ul li a:last-child {
+    margin-right: 20px;
 }
 
 nav ul li a:hover {
-    text-decoration: underline;
-}
-
-/* Main Content Styles */
-main {
-    padding: 20px;
-    margin: 20px;
-    background: #ffffff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1, h2 {
-    color: #35424a;
+    color: #00ffff;
 }
 
 .artist-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
-}
-
-.artist-card {
-    background: #e2e2e2;
-    border-radius: 5px;
-    padding: 10px;
-    width: calc(33.333% - 20px); /* Three cards per row */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 100%; 
 }
 
 .artist-card img {
-    max-width: 100%;
-    border-radius: 5px;
-}
-
-/* List Styles */
-.location-list, .date-list, .relation-list {
-    list-style-type: none;
-    padding: 0;
-}
-
-.location-list li, .date-list li, .relation-list li {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-/* Footer Styles */
-footer {
-    text-align: center;
-    padding: 10px 0;
-    background: #35424a;
-    color: #ffffff;
-    position: relative;
-    bottom: 0;
     width: 100%;
+    height: auto;
+    object-fit: cover;
 }
