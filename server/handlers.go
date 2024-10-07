@@ -4,164 +4,165 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
-	"text/template"
 )
 
-var tmp *template.Template
-
-func init() {
-	tmp = template.Must(template.ParseGlob("front/html/*.html"))
+func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
+	t, ok := templates[tmpl]
+	if !ok {
+		http.Error(w, "Template not found", http.StatusInternalServerError)
+		return
+	}
+	err := t.ExecuteTemplate(w, "layout.html", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		err := "404 Page not found"
-		fmt.Println(err)
-		ErrorPage(w, err, http.StatusNotFound)
+		ErrorPage(w, http.StatusNotFound)
 		return
 	}
 	if r.Method != http.MethodGet {
-		err := "405 Method is not allowed"
-		fmt.Println(err)
-		ErrorPage(w, err, http.StatusMethodNotAllowed)
+		ErrorPage(w, http.StatusMethodNotAllowed)
 		return
 	}
-
-	artists, err := FetchArtists()
-	if err != nil {
-		err := "500 Internal Server Error"
-		fmt.Println(err)
-		ErrorPage(w, err, http.StatusInternalServerError)
-		return
+	data := struct {
+		Title string
+		Data  []Artist
+	}{
+		Title: "Groupie Trackers - Artists",
+		Data:  artists,
 	}
-	location, err := FetchLocations()
-	if err != nil {
-		err := "500 Internal Server Error"
-		fmt.Println(err)
-		ErrorPage(w, err, http.StatusInternalServerError)
-		return
-	}
-	allInfo := Everything{artists, location}
-
-	err = tmp.ExecuteTemplate(w, "index.html", allInfo)
-	if err != nil {
-		err := "500 Internal Server Error"
-		fmt.Println(err)
-		ErrorPage(w, err, http.StatusInternalServerError)
-		return
-	}
+	renderTemplate(w, "index.html", data)
 }
 
 func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/artists/" {
-		err := "404 Page not found"
-		fmt.Println(err)
-		ErrorPage(w, err, http.StatusNotFound)
+		ErrorPage(w, http.StatusNotFound)
 		return
 	}
 	if r.Method != http.MethodGet {
-		err := "405 method not allowed"
-		fmt.Println(err)
-		ErrorPage(w, err, http.StatusMethodNotAllowed)
-		return
-	}
-	artists, err := FetchArtists()
-	if err != nil {
-		err := "500 Internal Server Error"
-		fmt.Println(err)
-		ErrorPage(w, err, http.StatusInternalServerError)
+		ErrorPage(w, http.StatusMethodNotAllowed)
 		return
 	}
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if id <= 0 || id > len(artists) || err != nil {
-		err := "404 Page not found"
 		fmt.Println(err)
-		ErrorPage(w, err, http.StatusNotFound)
+		ErrorPage(w, http.StatusNotFound)
 		return
 	}
-	infoAboutOne, err := ArtistID(id)
+	id++
+	locations, err := FetchLocations(artists[id].Locations)
 	if err != nil {
-		err := "500 Internal Server Error"
 		fmt.Println(err)
-		ErrorPage(w, err, http.StatusInternalServerError)
+		ErrorPage(w, http.StatusInternalServerError)
 		return
 	}
-	rel, err := FetchRelation(id)
+	dates, err := FetchDates(artists[id].ConcertDates)
 	if err != nil {
-		err := "500 Internal Server Error"
 		fmt.Println(err)
-		ErrorPage(w, err, http.StatusInternalServerError)
+		ErrorPage(w, http.StatusInternalServerError)
 		return
 	}
-	artist := ArtistInfo{infoAboutOne, rel}
-	err = tmp.ExecuteTemplate(w, "artist.html", artist)
+	rel, err := FetchRelation(artists[id].Relations)
 	if err != nil {
-		err := "500 Internal Server Error"
 		fmt.Println(err)
-		ErrorPage(w, err, http.StatusInternalServerError)
+		ErrorPage(w, http.StatusInternalServerError)
 		return
 	}
+
+	data := struct {
+		Title     string
+		Artist    Artist
+		Locations Loc
+		Dates     Date
+		Relations Relation
+	}{
+		Title:     "Artist Details",
+		Artist:    artists[id],
+		Locations: locations,
+		Dates:     dates,
+		Relations: rel,
+	}
+
+	renderTemplate(w, "details.html", data)
 }
 
-func SearchHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/search/" {
-		err := "404 Page not found"
-		ErrorPage(w, err, http.StatusNotFound)
-		return
-	}
-	if r.Method != http.MethodGet {
-		err := "405 Method is not allowed"
-		ErrorPage(w, err, http.StatusMethodNotAllowed)
-		return
-	}
+// func SearchHandler(w http.ResponseWriter, r *http.Request) {
+// 	if r.URL.Path != "/search/" {
+// 		err := "404 Page not found"
+// 		ErrorPage(w, err, http.StatusNotFound)
+// 		return
+// 	}
+// 	if r.Method != http.MethodGet {
+// 		err := "405 Method is not allowed"
+// 		ErrorPage(w, err, http.StatusMethodNotAllowed)
+// 		return
+// 	}
 
-	artists, err := FetchArtists()
-	if err != nil {
-		err := "500 Internal Server Error"
-		ErrorPage(w, err, http.StatusInternalServerError)
-		return
-	}
-	location, err := FetchLocations()
-	if err != nil {
-		err := "500 Internal Server Error"
-		ErrorPage(w, err, http.StatusInternalServerError)
-		return
-	}
-	allInfo := Everything{artists, location}
+// 	artists, err := FetchArtists()
+// 	if err != nil {
+// 		err := "500 Internal Server Error"
+// 		ErrorPage(w, err, http.StatusInternalServerError)
+// 		return
+// 	}
+// 	location, err := FetchLocations()
+// 	if err != nil {
+// 		err := "500 Internal Server Error"
+// 		ErrorPage(w, err, http.StatusInternalServerError)
+// 		return
+// 	}
+// 	allInfo := Everything{artists, location}
 
-	searchTerm := r.FormValue("Search")
-	if strings.Contains(searchTerm, " - ") {
-		searchTermWithoutGroups := strings.Split(searchTerm, " - ")
-		searchTerm = searchTermWithoutGroups[0]
+// 	searchTerm := r.FormValue("Search")
+// 	if strings.Contains(searchTerm, " - ") {
+// 		searchTermWithoutGroups := strings.Split(searchTerm, " - ")
+// 		searchTerm = searchTermWithoutGroups[0]
+// 	}
+
+// 	var searchedArtists Everything
+// 	if searchTerm != "" {
+// 		searchedArtists, err = Search(allInfo, searchTerm)
+// 		if err != nil {
+// 			err := "500 Internal Server Error"
+// 			ErrorPage(w, err, http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 	}
+
+// 	err = tmp.ExecuteTemplate(w, "search.html", searchedArtists)
+// 	if err != nil {
+// 		err := "500 Internal Server Error"
+// 		ErrorPage(w, err, http.StatusInternalServerError)
+// 		return
+// 	}
+// }
+
+func ErrorPage(w http.ResponseWriter, code int) {
+	var message string
+	switch code {
+	case http.StatusNotFound:
+		message = "404 Not Found"
+	case http.StatusBadRequest:
+		message = "400 Bad Request"
+	case http.StatusMethodNotAllowed:
+		message = "405 Method Not Allowed"
+	default:
+		message = "500 Internal Server Error"
 	}
-
-	var searchedArtists Everything
-	if searchTerm != "" {
-		searchedArtists, err = Search(allInfo, searchTerm)
-		if err != nil {
-			err := "500 Internal Server Error"
-			ErrorPage(w, err, http.StatusInternalServerError)
-			return
-		}
-
+	// Prepare the data to be passed to the template
+	data := struct {
+		Title   string
+		Status  int
+		Message string
+	}{
+		Title:   "Error",
+		Status:  code,
+		Message: message,
 	}
-
-	err = tmp.ExecuteTemplate(w, "search.html", searchedArtists)
-	if err != nil {
-		err := "500 Internal Server Error"
-		ErrorPage(w, err, http.StatusInternalServerError)
-		return
-	}
-}
-
-func ErrorPage(w http.ResponseWriter, errors string, code int) {
 	w.WriteHeader(code)
-	err:=tmp.ExecuteTemplate(w, "error.html", errors)
-	if err != nil {
-		err := "500 Internal Server Error"
-		fmt.Println(err)
-		http.Error(w, err, 500)
-		return
-	}
+	// Render the error page using the errors.html template
+	renderTemplate(w, "error.html", data)
 }

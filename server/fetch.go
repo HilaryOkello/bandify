@@ -2,41 +2,59 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
-	"strconv"
-	"strings"
+	"path/filepath"
+	"text/template"
 )
+
+var templates map[string]*template.Template
 
 const (
-	artistsURL   = "https://groupietrackers.herokuapp.com/api/artists"
-	locationsURL = "https://groupietrackers.herokuapp.com/api/locations"
-	datesURL     = "https://groupietrackers.herokuapp.com/api/dates"
-	relationsURL = "https://groupietrackers.herokuapp.com/api/relation"
+	artistsURL = "https://groupietrackers.herokuapp.com/api/artists"
 )
 
-func FetchArtists() ([]Artist, error) {
-	var artists []Artist
+var artists []Artist
+
+func init() {
+	templates = make(map[string]*template.Template)
+	layout := "templates/layout.html"
+	pages, err := filepath.Glob("templates/*.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, page := range pages {
+		if page != layout {
+			files := []string{layout, page}
+			templates[filepath.Base(page)] = template.Must(template.ParseFiles(files...))
+		}
+	}
+	if err := FetchArtists(); err != nil {
+		log.Fatal("Could not fetch artists")
+	}
+}
+
+func FetchArtists() error {
 	response, err := http.Get(artistsURL)
 	if err != nil {
-		return artists, err
+		return err
 	}
 	bytes, err := io.ReadAll(response.Body)
 	if err != nil {
-		return artists, err
+		return err
 	}
 	err = json.Unmarshal(bytes, &artists)
 	if err != nil {
-		return artists, err
+		return err
 	}
 	defer response.Body.Close()
-	return artists, nil
+	return nil
 }
 
-func FetchLocations() (Loc, error) {
+func FetchLocations(url string) (Loc, error) {
 	var location Loc
-	response, err := http.Get(locationsURL)
+	response, err := http.Get(url)
 	if err != nil {
 		return location, err
 	}
@@ -52,44 +70,9 @@ func FetchLocations() (Loc, error) {
 	return location, nil
 }
 
-func ArtistID(id int) (Artist, error) {
-	var artist Artist
-	response, err := http.Get(fmt.Sprintf("https://groupietrackers.herokuapp.com/api/artists/%d", id))
-	if err != nil {
-		return artist, err
-	}
-	bytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return artist, err
-	}
-
-	err = json.Unmarshal(bytes, &artist)
-	if err != nil {
-		return artist, err
-	}
-	return artist, nil
-}
-
-func LocationID(id int) (Loc, error) {
-	var location Loc // see the structure
-	response, err := http.Get(fmt.Sprintf("https://groupietrackers.herokuapp.com/api/locations/%d", id))
-	if err != nil {
-		return location, err
-	}
-	bytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return location, err
-	}
-	err = json.Unmarshal(bytes, &location)
-	if err != nil {
-		return location, err
-	}
-	return location, nil
-}
-
-func FetchRelation(id int) (Relation, error) {
+func FetchRelation(url string) (Relation, error) {
 	var rel Relation
-	response, err := http.Get(fmt.Sprintf("https://groupietrackers.herokuapp.com/api/relation/%d", id))
+	response, err := http.Get(url)
 	if err != nil {
 		return rel, err
 	}
@@ -104,20 +87,37 @@ func FetchRelation(id int) (Relation, error) {
 	return rel, nil
 }
 
-func Search(data Everything, searchTerm string) (Everything, error) {
-	var output Everything
-	ids := make(map[int]int)
-	var artists []Artist
-	for _, result := range data.Everyone {
-		if strings.Contains(strings.ToLower(result.Name), strings.ToLower(searchTerm)) || strings.Contains(strings.ToLower(result.FirstAlbum), strings.ToLower(searchTerm)) || strings.Contains(strings.ToLower(strconv.Itoa(result.CreationDate)), strings.ToLower(searchTerm)) {
-			if _, ok := ids[result.ID]; ok {
-				continue
-			} else {
-				artists = append(artists, result)
-				ids[result.ID] += 1
-			}
-		}
+func FetchDates(url string) (Date, error) {
+	var dates Date
+	response, err := http.Get(url)
+	if err != nil {
+		return dates, err
 	}
-	output.Everyone = artists
-	return output, nil
+	bytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return dates, err
+	}
+	err = json.Unmarshal(bytes, &dates)
+	if err != nil {
+		return dates, err
+	}
+	return dates, nil
 }
+
+// func Search(data Everything, searchTerm string) (Everything, error) {
+// 	var output Everything
+// 	ids := make(map[int]int)
+// 	var artists []Artist
+// 	for _, result := range data.Everyone {
+// 		if strings.Contains(strings.ToLower(result.Name), strings.ToLower(searchTerm)) || strings.Contains(strings.ToLower(result.FirstAlbum), strings.ToLower(searchTerm)) || strings.Contains(strings.ToLower(strconv.Itoa(result.CreationDate)), strings.ToLower(searchTerm)) {
+// 			if _, ok := ids[result.ID]; ok {
+// 				continue
+// 			} else {
+// 				artists = append(artists, result)
+// 				ids[result.ID] += 1
+// 			}
+// 		}
+// 	}
+// 	output.Everyone = artists
+// 	return output, nil
+// }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -13,11 +14,12 @@ func StaticHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if the file path is a directory
 	info, err := os.Stat(filePath)
 	if err != nil {
-		ErrorHandler(w, r, http.StatusNotFound)
+		fmt.Println(err)
+		ErrorPage(w, http.StatusNotFound)
 		return
 	}
 	if info.IsDir() {
-		ErrorHandler(w, r, http.StatusNotFound)
+		ErrorPage(w, http.StatusNotFound)
 		return
 	}
 	http.ServeFile(w, r, filePath)
