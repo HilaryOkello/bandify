@@ -12,8 +12,15 @@
     <header>
         <nav>
             <ul>
-                <div class = "nav-links">
+                <div class="nav-links">
                     <li><a href="/">Home</a></li>
+                </div>
+                <div>
+                    <form action="/search" autocomplete="off" method="get" class="searchBar">
+                        <i class="fas fa-search"></i>
+                        <input class="sb" list="search" id="Search" name="Search" placeholder="Search..." />
+                        <button type="submit">Search</button>
+                    </form>
                 </div>
             </ul>
         </nav>

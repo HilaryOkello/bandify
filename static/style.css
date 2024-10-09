@@ -13,7 +13,11 @@ body {
     color: #ffffff;
 }
 
-.main{
+header {
+    margin-bottom: 50px;
+}
+
+main{
     flex: 1 0 auto;
 }
 
@@ -54,6 +58,14 @@ nav ul li a:hover {
 
 .searchbar {
     height: 50px;
+}
+
+form input {
+    padding: 10px 20px;
+}
+
+form button {
+    padding: 10px 20px;
 }
 
 .artist-grid {
