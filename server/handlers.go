@@ -4,17 +4,19 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"text/template"
 )
 
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	t, ok := templates[tmpl]
 	if !ok {
-		http.Error(w, "Template not found", http.StatusInternalServerError)
+		ErrorPage(w, http.StatusNotFound)
 		return
 	}
 	err := t.ExecuteTemplate(w, "layout.html", data)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		ErrorPage(w, http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -77,13 +79,13 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 		Artist    Artist
 		Locations Loc
 		Dates     Date
-		Concerts Relation
+		Concerts  Relation
 	}{
 		Title:     "Artist Details",
 		Artist:    artists[id],
 		Locations: locations,
 		Dates:     dates,
-		Concerts: rel,
+		Concerts:  rel,
 	}
 
 	renderTemplate(w, "details.html", data)
@@ -144,13 +146,13 @@ func ErrorPage(w http.ResponseWriter, code int) {
 	var message string
 	switch code {
 	case http.StatusNotFound:
-		message = "404 Not Found"
+		message = "Not Found"
 	case http.StatusBadRequest:
-		message = "400 Bad Request"
+		message = "Bad Request"
 	case http.StatusMethodNotAllowed:
-		message = "405 Method Not Allowed"
+		message = "Method Not Allowed"
 	default:
-		message = "500 Internal Server Error"
+		message = "Internal Server Error"
 	}
 	// Prepare the data to be passed to the template
 	data := struct {
@@ -163,6 +165,19 @@ func ErrorPage(w http.ResponseWriter, code int) {
 		Message: message,
 	}
 	w.WriteHeader(code)
-	// Render the error page using the errors.html template
-	renderTemplate(w, "error.html", data)
+
+	// Parse both layout.html and error.html templates
+	tmpl, err := template.ParseFiles("templates/errors.html")
+	if err != nil {
+		// If parsing fails, fall back to a simple error message
+		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
+		return
+	}
+
+	// Execute the template, using layout.html as the base
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		// If execution fails, fall back to a simple error message
+		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
+	}
 }
