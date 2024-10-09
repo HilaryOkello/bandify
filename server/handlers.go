@@ -52,7 +52,7 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 		ErrorPage(w, http.StatusNotFound)
 		return
 	}
-	id++
+	id--
 	locations, err := FetchLocations(artists[id].Locations)
 	if err != nil {
 		fmt.Println(err)
@@ -77,13 +77,13 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 		Artist    Artist
 		Locations Loc
 		Dates     Date
-		Relations Relation
+		Concerts Relation
 	}{
 		Title:     "Artist Details",
 		Artist:    artists[id],
 		Locations: locations,
 		Dates:     dates,
-		Relations: rel,
+		Concerts: rel,
 	}
 
 	renderTemplate(w, "details.html", data)
