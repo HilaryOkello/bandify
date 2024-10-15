@@ -18,9 +18,9 @@ header {
     margin-bottom: 50px;
 }
 
-/* main{
-    flex: 1 0 auto;
-} */
+main{
+    min-height:calc(100vh - 200px);
+}
 
 
 nav ul {
@@ -131,6 +131,17 @@ form button:hover {
     body {
         width: 90vw;
     }
+    nav ul {
+        flex-direction: column; /* Stack items vertically */
+        align-items: flex-start; /* Align items to the start */
+    }
+    form input {
+        padding: 10px 10px;
+    }
+    
+    form button {
+        padding: 10px 10px;
+    }
     .artist-grid {
         grid-template-columns: 1fr; /* 1 column layout on small screens */
     }
@@ -145,6 +156,7 @@ form button:hover {
 }
 
 .artist-image {
+    min-width: 150px;
     width: 250px;
     height: auto;
     border-radius: 5px;
@@ -192,8 +204,27 @@ th, td {
     text-align: left;
 }
 
+.error-details h1 {
+    color: #ed2100;
+}
+.error-details p {
+    margin-bottom: 50px;
+}
+
+.error-details a {
+        margin-top: auto;
+        text-align: center;
+        background-color: #f2f0ef;
+        color: #3B3430;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none; 
+}
+.error-details a:hover {
+    background-color: #F2EF72;
+}
+
 footer {
-    flex-shrink: 0;
     padding: 10px 0;
     text-align: center;
 }

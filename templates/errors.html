@@ -13,16 +13,26 @@
         <nav>
             <ul>
                 <div class="nav-links">
-                    <li><a href="/">Home</a></li>
+                    <li><a href="/">Groupie Tracker</a></li>
+                </div>
+                <div>
+                    <form action="/search" autocomplete="off" method="get" class="searchBar">
+                        <i class="fas fa-search"></i>
+                        <input class="sb" list="search" id="Search" name="Search" placeholder="Search..." />
+                        <button type="submit">Search</button>
+                    </form>
                 </div>
             </ul>
         </nav>
     </header>
 
     <main>
-        <h1>Error</h1>
-        <h2>{{.Status}} - {{.Message}}</h2>
-        <p>Sorry, something went wrong. Please try again later or go back to the <a href="/">home page</a>.</p>
+        <div class="error-details">
+            <h1>{{.Status}} - {{.Message}}</h1>
+            <p>Sorry, something went wrong. Please try again later.</p>
+            <a href="/">home page</a>
+        </div>
+
     </main>
 
     <footer>
