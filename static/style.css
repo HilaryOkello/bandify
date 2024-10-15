@@ -22,7 +22,6 @@ main{
     min-height:calc(100vh - 200px);
 }
 
-
 nav ul {
     list-style-type: none;
     font-size: 2rem;
