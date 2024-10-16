@@ -146,6 +146,17 @@ form button:hover {
     }
 }
 
+/* Media query for medium-width devices */
+@media (max-width: 768px) {
+    body {
+        width: 90vw;
+    }
+    nav ul {
+        flex-direction: column; /* Stack items vertically */
+        align-items: flex-start; /* Align items to the start */
+    }
+}
+
 .artist-details {
     display: flex;
     justify-content: flex-start;
