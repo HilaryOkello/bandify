@@ -11,6 +11,7 @@ import (
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	t, ok := templates[tmpl]
 	if !ok {
+		fmt.Println(tmpl, "not found")
 		ErrorPage(w, http.StatusNotFound)
 		return
 	}
@@ -23,7 +24,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 
 func checkMethodAndPath(w http.ResponseWriter, r *http.Request, method, path string) bool {
 	if r.Method != method {
-		ErrorPage(w, http.StatusBadRequest)
+		ErrorPage(w, http.StatusMethodNotAllowed)
 		return false
 	}
 	if r.URL.Path != path {
@@ -52,7 +53,7 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if id <= 0 || id > len(artists) || err != nil {
 		fmt.Println(err)
-		ErrorPage(w, http.StatusNotFound)
+		ErrorPage(w, http.StatusBadRequest)
 		return
 	}
 	id--
@@ -138,7 +139,7 @@ func ErrorPage(w http.ResponseWriter, code int) {
         Status:  code,
         Message: message,
     }
-	
+
 	w.WriteHeader(code)
 	tmpl, err := template.ParseFiles("templates/errors.html")
 	if err != nil {
