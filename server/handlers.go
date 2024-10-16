@@ -21,19 +21,23 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	}
 }
 
-func MainPage(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
+func checkMethodAndPath(w http.ResponseWriter, r *http.Request, method, path string) bool {
+	if r.Method != method {
+		ErrorPage(w, http.StatusBadRequest)
+		return false
+	}
+	if r.URL.Path != path {
 		ErrorPage(w, http.StatusNotFound)
+		return false
+	}
+	return true
+}
+
+func MainPage(w http.ResponseWriter, r *http.Request) {
+	if !checkMethodAndPath(w, r, http.MethodGet, "/") {
 		return
 	}
-	if r.Method != http.MethodGet {
-		ErrorPage(w, http.StatusMethodNotAllowed)
-		return
-	}
-	data := struct {
-		Title string
-		Data  []Artist
-	}{
+	data := TemplateData{
 		Title: "Groupie Trackers - Artists",
 		Data:  artists,
 	}
@@ -41,14 +45,10 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/artists/" {
-		ErrorPage(w, http.StatusNotFound)
+	if !checkMethodAndPath(w, r, http.MethodGet, "/artists/") {
 		return
 	}
-	if r.Method != http.MethodGet {
-		ErrorPage(w, http.StatusMethodNotAllowed)
-		return
-	}
+
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if id <= 0 || id > len(artists) || err != nil {
 		fmt.Println(err)
@@ -56,18 +56,21 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id--
+
 	locations, err := FetchLocations(artists[id].Locations)
 	if err != nil {
 		fmt.Println(err)
 		ErrorPage(w, http.StatusInternalServerError)
 		return
 	}
+
 	dates, err := FetchDates(artists[id].ConcertDates)
 	if err != nil {
 		fmt.Println(err)
 		ErrorPage(w, http.StatusInternalServerError)
 		return
 	}
+
 	rel, err := FetchRelation(artists[id].Relations)
 	if err != nil {
 		fmt.Println(err)
@@ -75,13 +78,7 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := struct {
-		Title     string
-		Artist    Artist
-		Locations Loc
-		Dates     Date
-		Concerts  Relation
-	}{
+	data := TemplateData{
 		Title:     "Artist Details",
 		Artist:    artists[id],
 		Locations: locations,
@@ -94,53 +91,34 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 
 // SearchPage handles the artist search functionality.
 func SearchPage(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodGet {
-        ErrorPage(w, http.StatusMethodNotAllowed)
-        return
-    }
+	if !checkMethodAndPath(w, r, http.MethodGet, "/search/") {
+		return
+	}
 
-    query := r.URL.Query().Get("q")
-    if query == "" {
-        ErrorPage(w, http.StatusBadRequest) // No query provided, return 400 error.
-        return
-    }
+	query := r.URL.Query().Get("q")
+	if query == "" {
+		ErrorPage(w, http.StatusBadRequest)
+		return
+	}
 
-    var results []Artist
-    for _, artist := range artists {
-        if strings.Contains(strings.ToLower(artist.Name), strings.ToLower(query)) {
-            results = append(results, artist)
-        }
-    }
+	var results []Artist
+	for _, artist := range artists {
+		if strings.Contains(strings.ToLower(artist.Name), strings.ToLower(query)) {
+			results = append(results, artist)
+		}
+	}
 
-    // If no results, show a "No artists found" message instead of a 404.
-    if len(results) == 0 {
-        data := struct {
-            Title   string
-            Query   string
-            Results []Artist
-            Message string
-        }{
-            Title:   "Search Results",
-            Query:   query,
-            Results: results,
-            Message: "No artists found matching your query.",
-        }
-        renderTemplate(w, "search.html", data)
-        return
-    }
+	data := TemplateData{
+		Title:   "Search Results",
+		Query:   query,
+		Results: results,
+	}
 
-    // Render the search results
-    data := struct {
-        Title   string
-        Query   string
-        Results []Artist
-    }{
-        Title:   "Search Results",
-        Query:   query,
-        Results: results,
-    }
-    
-    renderTemplate(w, "search.html", data)
+	if len(results) == 0 {
+		data.Message = "No artists found matching your query."
+	}
+
+	renderTemplate(w, "search.html", data)
 }
 
 func ErrorPage(w http.ResponseWriter, code int) {
@@ -155,30 +133,21 @@ func ErrorPage(w http.ResponseWriter, code int) {
 	default:
 		message = "Internal Server Error"
 	}
-	// Prepare the data to be passed to the template
-	data := struct {
-		Title   string
-		Status  int
-		Message string
-	}{
-		Title:   "Error",
-		Status:  code,
-		Message: message,
-	}
+	data := TemplateData{
+        Title:   "Error",
+        Status:  code,
+        Message: message,
+    }
+	
 	w.WriteHeader(code)
-
-	// Parse both layout.html and error.html templates
 	tmpl, err := template.ParseFiles("templates/errors.html")
 	if err != nil {
-		// If parsing fails, fall back to a simple error message
 		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
 		return
 	}
 
-	// Execute the template, using layout.html as the base
 	err = tmpl.Execute(w, data)
 	if err != nil {
-		// If execution fails, fall back to a simple error message
 		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
 	}
 }

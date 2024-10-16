@@ -23,3 +23,16 @@ type Loc struct {
 type Relation struct {
 	DatesLocation map[string][]string `json:"datesLocations"`
 }
+
+type TemplateData struct {
+	Title     string
+	Artist    Artist
+	Data      []Artist
+	Locations Loc
+	Dates     Date
+	Concerts  Relation
+	Query     string
+	Results   []Artist
+	Message   string
+	Status    int
+}
