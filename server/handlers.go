@@ -2,7 +2,11 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"text/template"
@@ -11,7 +15,7 @@ import (
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	t, ok := templates[tmpl]
 	if !ok {
-		fmt.Println(tmpl, "not found")
+		log.Println(tmpl, "not found")
 		ErrorPage(w, http.StatusNotFound)
 		return
 	}
@@ -52,7 +56,7 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if id <= 0 || id > len(artists) || err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		ErrorPage(w, http.StatusBadRequest)
 		return
 	}
@@ -60,21 +64,21 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 
 	locations, err := FetchLocations(artists[id].Locations)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		ErrorPage(w, http.StatusInternalServerError)
 		return
 	}
 
 	dates, err := FetchDates(artists[id].ConcertDates)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		ErrorPage(w, http.StatusInternalServerError)
 		return
 	}
 
 	rel, err := FetchRelation(artists[id].Relations)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		ErrorPage(w, http.StatusInternalServerError)
 		return
 	}
@@ -131,14 +135,16 @@ func ErrorPage(w http.ResponseWriter, code int) {
 		message = "Bad Request"
 	case http.StatusMethodNotAllowed:
 		message = "Method Not Allowed"
+	case http.StatusForbidden:
+		message = "Forbidden"
 	default:
 		message = "Internal Server Error"
 	}
 	data := TemplateData{
-        Title:   "Error",
-        Status:  code,
-        Message: message,
-    }
+		Title:   "Error",
+		Status:  code,
+		Message: message,
+	}
 
 	w.WriteHeader(code)
 	tmpl, err := template.ParseFiles("templates/errors.html")
@@ -151,4 +157,35 @@ func ErrorPage(w http.ResponseWriter, code int) {
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
 	}
+}
+
+func ServeStatic(w http.ResponseWriter, r *http.Request) {
+	// Remove the /static/ prefix from the URL path
+	filePath := path.Join("static", strings.TrimPrefix(r.URL.Path, "/static/"))
+
+	// Check if the file exists and is not a directory
+	info, err := os.Stat(filePath)
+	if err != nil || info.IsDir() {
+		ErrorPage(w, http.StatusForbidden)
+		return
+	}
+
+	// Check the file extension
+	ext := filepath.Ext(filePath)
+	switch ext {
+	case ".css":
+		w.Header().Set("Content-Type", "text/css")
+	case ".js":
+		w.Header().Set("Content-Type", "application/javascript")
+	case ".png":
+		w.Header().Set("Content-Type", "image/png")
+	case ".jpg", ".jpeg":
+		w.Header().Set("Content-Type", "image/jpeg")
+	default:
+		ErrorPage(w, http.StatusForbidden)
+		return
+	}
+
+	// Serve the file
+	http.ServeFile(w, r, filePath)
 }
