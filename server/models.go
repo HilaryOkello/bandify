@@ -1,5 +1,6 @@
 package server
 
+// Defines the data structuresto be fetched representing artists, locations, dates, and concert relations
 type Artist struct {
 	ID           int      `json:"id"`
 	Image        string   `json:"image"`
@@ -24,6 +25,7 @@ type Relation struct {
 	DatesLocation map[string][]string `json:"datesLocations"`
 }
 
+// Passes dynamic data to HTML templates for rendering web pages.
 type TemplateData struct {
 	Title     string
 	Artist    Artist

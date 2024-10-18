@@ -12,13 +12,16 @@ import (
 	"text/template"
 )
 
+// renderTemplate renders a specified template with the provided data.
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
+	// Retrieve the template from the global map
 	t, ok := templates[tmpl]
 	if !ok {
 		log.Println(tmpl, "not found")
 		ErrorPage(w, http.StatusNotFound)
 		return
 	}
+	// Execute the template with the provided data and layout
 	err := t.ExecuteTemplate(w, "layout.html", data)
 	if err != nil {
 		ErrorPage(w, http.StatusInternalServerError)
@@ -26,11 +29,14 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	}
 }
 
+// checkMethodAndPath checks if the request method and path match expected values.
 func checkMethodAndPath(w http.ResponseWriter, r *http.Request, method, path string) bool {
+	// Render a 405 error page for wrong method
 	if r.Method != method {
-		ErrorPage(w, http.StatusMethodNotAllowed)
+		ErrorPage(w, http.StatusMethodNotAllowed) 
 		return false
 	}
+	// Render a 404 error page for wrong path
 	if r.URL.Path != path {
 		ErrorPage(w, http.StatusNotFound)
 		return false
@@ -38,10 +44,12 @@ func checkMethodAndPath(w http.ResponseWriter, r *http.Request, method, path str
 	return true
 }
 
+// MainPage serves as the home page of the application.
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	if !checkMethodAndPath(w, r, http.MethodGet, "/") {
 		return
 	}
+	// Create a TemplateData object with the title and list of artists.
 	data := TemplateData{
 		Title: "Groupie Trackers - Artists",
 		Data:  artists,
@@ -49,11 +57,13 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "index.html", data)
 }
 
+// InfoAboutArtist serves detailed information about a specific artist.
 func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 	if !checkMethodAndPath(w, r, http.MethodGet, "/artists/") {
 		return
 	}
 
+	// Get artist ID through query parameter and validate
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if id <= 0 || id > len(artists) || err != nil {
 		log.Println(err)
@@ -62,6 +72,7 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 	}
 	id--
 
+	// Fetch artist data
 	locations, err := FetchLocations(artists[id].Locations)
 	if err != nil {
 		log.Println(err)
@@ -90,7 +101,7 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 		Dates:     dates,
 		Concerts:  rel,
 	}
-
+	// Render the artist details template with all relevant data 
 	renderTemplate(w, "details.html", data)
 }
 
@@ -100,6 +111,7 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get search query from URL parameters 
 	query := r.URL.Query().Get("q")
 	if query == "" {
 		ErrorPage(w, http.StatusBadRequest)
@@ -123,9 +135,12 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		data.Message = "No artists found matching your query."
 	}
 
+	// Render the search results template with matched artists 
 	renderTemplate(w, "search.html", data)
 }
 
+
+// ErrorPage renders an error page based on the HTTP status code.
 func ErrorPage(w http.ResponseWriter, code int) {
 	var message string
 	switch code {
@@ -146,13 +161,16 @@ func ErrorPage(w http.ResponseWriter, code int) {
 		Message: message,
 	}
 
+	// Set HTTP response status code 
 	w.WriteHeader(code)
 	tmpl, err := template.ParseFiles("templates/errors.html")
+	// Serve basic error response if template parsing fails  
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
 		return
 	}
 
+	// Serve basic error response if template execution fails 
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
