@@ -33,7 +33,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 func checkMethodAndPath(w http.ResponseWriter, r *http.Request, method, path string) bool {
 	// Render a 405 error page for wrong method
 	if r.Method != method {
-		ErrorPage(w, http.StatusMethodNotAllowed) 
+		ErrorPage(w, http.StatusMethodNotAllowed)
 		return false
 	}
 	// Render a 404 error page for wrong path
@@ -101,7 +101,7 @@ func InfoAboutArtist(w http.ResponseWriter, r *http.Request) {
 		Dates:     dates,
 		Concerts:  rel,
 	}
-	// Render the artist details template with all relevant data 
+	// Render the artist details template with all relevant data
 	renderTemplate(w, "details.html", data)
 }
 
@@ -111,7 +111,7 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get search query from URL parameters 
+	// Get search query from URL parameters
 	query := r.URL.Query().Get("q")
 	if query == "" {
 		ErrorPage(w, http.StatusBadRequest)
@@ -135,10 +135,9 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		data.Message = "No artists found matching your query."
 	}
 
-	// Render the search results template with matched artists 
+	// Render the search results template with matched artists
 	renderTemplate(w, "search.html", data)
 }
-
 
 // ErrorPage renders an error page based on the HTTP status code.
 func ErrorPage(w http.ResponseWriter, code int) {
@@ -161,16 +160,16 @@ func ErrorPage(w http.ResponseWriter, code int) {
 		Message: message,
 	}
 
-	// Set HTTP response status code 
+	// Set HTTP response status code
 	w.WriteHeader(code)
 	tmpl, err := template.ParseFiles("templates/errors.html")
-	// Serve basic error response if template parsing fails  
+	// Serve basic error response if template parsing fails
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
 		return
 	}
 
-	// Serve basic error response if template execution fails 
+	// Serve basic error response if template execution fails
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%d - %s", code, message), code)
@@ -178,13 +177,17 @@ func ErrorPage(w http.ResponseWriter, code int) {
 }
 
 func ServeStatic(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		ErrorPage(w, http.StatusMethodNotAllowed)
+		return
+	}
 	// Remove the /static/ prefix from the URL path
 	filePath := path.Join("static", strings.TrimPrefix(r.URL.Path, "/static/"))
 
 	// Check if the file exists and is not a directory
 	info, err := os.Stat(filePath)
 	if err != nil || info.IsDir() {
-		ErrorPage(w, http.StatusForbidden)
+		ErrorPage(w, http.StatusNotFound)
 		return
 	}
 
@@ -200,7 +203,7 @@ func ServeStatic(w http.ResponseWriter, r *http.Request) {
 	case ".jpg", ".jpeg":
 		w.Header().Set("Content-Type", "image/jpeg")
 	default:
-		ErrorPage(w, http.StatusForbidden)
+		ErrorPage(w, http.StatusNotFound)
 		return
 	}
 
