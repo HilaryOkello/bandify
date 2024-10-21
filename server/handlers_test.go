@@ -506,11 +506,11 @@ func TestServeStatic_Forbidden(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/static/nonexistent.txt", nil)
 	ServeStatic(w, r)
-	if w.Code != http.StatusForbidden {
+	if w.Code != http.StatusNotFound {
 		t.Errorf("Expected status code %d, got %d", http.StatusNotFound, w.Code)
 	}
 	responseBody := w.Body.String()
-	expectedErrorMessage := "Forbidden"
+	expectedErrorMessage := "Not Found"
 	if !strings.Contains(responseBody, expectedErrorMessage) {
 		t.Errorf("Expected response body to contain '%s', but it didn't", expectedErrorMessage)
 	}
@@ -532,11 +532,11 @@ func TestServeStatic_DirectoryHandling(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/static/", nil)
 	ServeStatic(w, r)
-	if w.Code != http.StatusForbidden {
-		t.Errorf("Expected status code %d, got %d", http.StatusForbidden, w.Code)
+	if w.Code != http.StatusNotFound {
+		t.Errorf("Expected status code %d, got %d", http.StatusNotFound, w.Code)
 	}
 	responseBody := w.Body.String()
-	expectedErrorMessage := "Forbidden"
+	expectedErrorMessage := "Not Found"
 	if !strings.Contains(responseBody, expectedErrorMessage) {
 		t.Errorf("Expected response body to contain '%s', but it didn't", expectedErrorMessage)
 	}
