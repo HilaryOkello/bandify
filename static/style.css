@@ -214,6 +214,10 @@ th, td {
     text-align: left;
 }
 
+.error-details {
+    text-align: center;
+}
+
 .error-details h1 {
     color: #ed2100;
 }
