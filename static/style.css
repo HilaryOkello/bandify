@@ -12,7 +12,19 @@ body {
     background-color: #1B1B1B;
     color: #f2f0ef;
     font-size: 16px;
+    cursor: none;
+    
 }
+.custom-cursor {
+    width: 30px;
+    height: 30px;
+    background: #F2EF72;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none; /* So it doesn't interfere with clicking */
+    z-index: 9999;
+    transform: translate(-50%, -50%); /* Center the circle on cursor */
+  }
 
 header {
     margin-bottom: 50px;
@@ -94,15 +106,22 @@ form button:hover {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    border-radius: 20px;
+    border-radius: 10px;
+    
 }
 
 .artist-card img {
     width: 100%;
     height: auto;
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease-in-out;
 }
+
+.artist-card img:hover {
+    box-shadow: 0 0 20px #f2f0efb3, 0 0 20px #f2f0ef80;
+}
+
 .artist-card h3 {
     margin: 5px 0;
 }
