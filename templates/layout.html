@@ -15,12 +15,12 @@
         <nav>
             <ul>
                 <div class="nav-links">
-                    <li><a href="/">Groupie Tracker</a></li>
+                    <li><a href="/" class="home-link" data-tooltip="Discover All Artists">Groupie Tracker</a></li>
                 </div>
                 <div>
                     <form action="/search" autocomplete="off" method="get" class="searchBar">
-                        <input class="sb" list="search" id="Search" name="q" placeholder="Search..." required/>
-                        <button type="submit"><i class="fa-sharp fa-solid fa-magnifying-glass"></i></button>
+                        <input class="sb" list="search" id="Search" name="q" placeholder="Search artists by name..." required/>
+                        <button type="submit" class="search-button" data-tooltip="search for artist by name"><i class="fa-sharp fa-solid fa-magnifying-glass"></i></button>
                     </form>
                 </div>
             </ul>
@@ -30,7 +30,7 @@
     <main>
         {{ block "content" . }}{{ end }}
     </main>
-
+    <div id="tooltip" class="tooltip" style="display: none;">Tooltip text</div>
     <footer>
         <p>&copy; 2024 Groupie Trackers</p>
     </footer>

@@ -6,7 +6,7 @@
         <img src="{{ .Image }}" alt="{{ .Name }}" class="">
         <h3>{{ .Name }}</h3>
         <p><strong>Members: </strong> {{ range .Members }}{{ . }}, {{ end }}</p>
-        <a href="/artists/?id={{ .ID }}" class="details-button">See Details</a>
+        <a href="/artists/?id={{ .ID }}" class="details-button" data-tooltip="Click to see artist's concerts, dates, etc.">See Details</a>
     </div>
     {{ end }}
 </div>

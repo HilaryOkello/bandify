@@ -92,6 +92,7 @@ form button {
 
 form button:hover {
     background-color: #F2EF72;
+    content: attr(data-tooltip);
 }
 
 .artist-grid {
@@ -255,6 +256,18 @@ th, td {
 }
 .error-details a:hover {
     background-color: #F2EF72;
+}
+
+.tooltip {
+    position: absolute;
+    background-color: #f2f0ef;
+    color: #3B3430;
+    padding: 10px 10px;
+    border-radius: 5px;
+    font-size: 15px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
 }
 
 footer {
