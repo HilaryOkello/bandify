@@ -13,30 +13,33 @@ body {
     color: #f2f0ef;
     font-size: 16px;
     cursor: none;
-    
+
 }
+
 .custom-cursor {
     width: 30px;
     height: 30px;
     background: #F2EF72;
     border-radius: 50%;
     position: fixed;
-    pointer-events: none; /* So it doesn't interfere with clicking */
+    pointer-events: none;
+    /* So it doesn't interfere with clicking */
     z-index: 9999;
-    transform: translate(-50%, -50%); /* Center the circle on cursor */
-  }
+    transform: translate(-50%, -50%);
+    /* Center the circle on cursor */
+}
 
 header {
     margin-bottom: 50px;
 }
 
-main{
-    min-height:calc(100vh - 200px);
+main {
+    min-height: calc(100vh - 200px);
 }
 
 nav ul {
     list-style-type: none;
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin: 0;
     padding: 20px 0 20px 0;
     display: flex;
@@ -70,6 +73,10 @@ nav ul li a:hover {
 
 .searchbar {
     height: 50px;
+}
+
+.sb {
+    min-width: 20vw;
 }
 
 form input {
@@ -108,7 +115,7 @@ form button:hover {
     flex-direction: column;
     justify-content: center;
     border-radius: 10px;
-    
+
 }
 
 .artist-card img {
@@ -150,19 +157,25 @@ form button:hover {
     body {
         width: 90vw;
     }
+
     nav ul {
-        flex-direction: column; /* Stack items vertically */
-        align-items: flex-start; /* Align items to the start */
+        flex-direction: column;
+        /* Stack items vertically */
+        align-items: flex-start;
+        /* Align items to the start */
     }
+
     form input {
         padding: 10px 10px;
     }
-    
+
     form button {
         padding: 10px 10px;
     }
+
     .artist-grid {
-        grid-template-columns: 1fr; /* 1 column layout on small screens */
+        grid-template-columns: 1fr;
+        /* 1 column layout on small screens */
     }
 }
 
@@ -171,9 +184,12 @@ form button:hover {
     body {
         width: 90vw;
     }
+
     nav ul {
-        flex-direction: column; /* Stack items vertically */
-        align-items: flex-start; /* Align items to the start */
+        flex-direction: column;
+        /* Stack items vertically */
+        align-items: flex-start;
+        /* Align items to the start */
     }
 }
 
@@ -222,14 +238,17 @@ form button:hover {
 .tab-content.active {
     display: block;
 }
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-th, td {
-    border: 1px solid #f2f0ef;;
+th,
+td {
+    border: 1px solid #f2f0ef;
+    ;
     padding: 8px;
     text-align: left;
 }
@@ -241,19 +260,21 @@ th, td {
 .error-details h1 {
     color: #ed2100;
 }
+
 .error-details p {
     margin-bottom: 50px;
 }
 
 .error-details a {
-        margin-top: auto;
-        text-align: center;
-        background-color: #f2f0ef;
-        color: #3B3430;
-        padding: 10px 20px;
-        border-radius: 5px;
-        text-decoration: none; 
+    margin-top: auto;
+    text-align: center;
+    background-color: #f2f0ef;
+    color: #3B3430;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
 }
+
 .error-details a:hover {
     background-color: #F2EF72;
 }
