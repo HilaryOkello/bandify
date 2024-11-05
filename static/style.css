@@ -1,5 +1,28 @@
 /* General Styles */
 
+/* Thunder Italic */
+@font-face {
+    font-family: 'Thunder';
+    src: url('thunder-open-type-ps/Thunder-BlackLCItalic.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+/* Thunder Normal */
+@font-face {
+    font-family: 'Thunder';
+    src: url('thunder-open-type-ps/Thunder-BlackLC.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Thunder Semi-Bold */
+@font-face {
+    font-family: 'Thunder';
+    src: url('thunder-open-type-ps/Thunder-SemiBoldLC.otf') format('opentype');
+    font-weight: normal;
+    font-style: bold;
+}
 
 /* Import Poppins Font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -39,7 +62,7 @@ main {
 
 nav ul {
     list-style-type: none;
-    font-size: 1.5rem;
+    font-size: 3rem;
     margin: 0;
     padding: 20px 0 20px 0;
     display: flex;
@@ -52,6 +75,8 @@ nav ul li {
 }
 
 .nav-links {
+    font-family: 'Thunder', sans-serif;
+    font-style: normal;
     margin-right: auto;
     /* Push Home & Artists to the left */
 }
@@ -71,16 +96,25 @@ nav ul li a:hover {
     color: #F2EF72;
 }
 
-.searchbar {
+.search-form {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+}
+
+.search-bar {
     height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
 }
 
-.sb {
+.search-input {
     min-width: 20vw;
-}
-
-form input {
-    padding: 10px 20px;
+    height: 40px;
+    padding: 0 10px;
     background-color: #f2f0ef;
     color: #3B3430;
     border: none;
@@ -89,17 +123,55 @@ form input {
 }
 
 form button {
-    padding: 10px 20px;
+    height: 40px;
+    padding: 0 15px;
     background-color: #f2f0ef;
     color: #3B3430;
     border: none;
     border-radius: 5px;
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    /* Centers icon vertically inside button */
+    justify-content: center;
 }
 
 form button:hover {
     background-color: #F2EF72;
     content: attr(data-tooltip);
+}
+
+.hero {
+    font-family: 'Thunder', sans-serif;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.hero-discover {
+    font-style: normal;
+    font-size: 5rem;
+    margin: 0;
+
+}
+
+.hero-concerts {
+    font-style: italic;
+    color: #F2EF72;
+    font-size: 10rem;
+    margin: 0;
+}
+
+.hero-artists {
+    font-style: italic;
+    color: #F2EF72;
+    font-size: 10rem;
+    margin: 0;
+}
+
+.hero-locations {
+    font-style: normal;
+    font-size: 5rem;
+    margin: 0;
 }
 
 .artist-grid {
@@ -111,6 +183,7 @@ form button:hover {
 }
 
 .artist-card {
+    font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -158,11 +231,17 @@ form button:hover {
         width: 90vw;
     }
 
+    .hero-artists,
+    .hero-concerts,
+    .hero-discover,
+    .hero-locations {
+        font-size: 4rem;
+    }
+
     nav ul {
         flex-direction: column;
-        /* Stack items vertically */
-        align-items: flex-start;
-        /* Align items to the start */
+        align-items: center;
+        justify-content: center;
     }
 
     form input {
@@ -171,6 +250,10 @@ form button:hover {
 
     form button {
         padding: 10px 10px;
+    }
+
+    .nav-links {
+        margin: 0 auto;
     }
 
     .artist-grid {
@@ -187,13 +270,17 @@ form button:hover {
 
     nav ul {
         flex-direction: column;
-        /* Stack items vertically */
-        align-items: flex-start;
-        /* Align items to the start */
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        margin: 0 auto;
     }
 }
 
 .artist-details {
+    font-family: 'Poppins', sans-serif;
     display: flex;
     justify-content: flex-start;
     align-items: top;
