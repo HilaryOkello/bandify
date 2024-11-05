@@ -202,6 +202,8 @@ func ServeStatic(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 	case ".jpg", ".jpeg":
 		w.Header().Set("Content-Type", "image/jpeg")
+	case ".otf":
+		w.Header().Set("Content-Type", "font/otf")
 	default:
 		ErrorPage(w, http.StatusNotFound)
 		return
