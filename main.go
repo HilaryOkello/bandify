@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,11 +9,13 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/static/", server.StaticHandler)
-	http.HandleFunc("/", server.HomeHandler)
-
-	log.Println("Server starting on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	http.HandleFunc("/static/", server.ServeStatic)
+	http.HandleFunc("/", server.MainPage)
+	http.HandleFunc("/artists/", server.InfoAboutArtist)
+	http.HandleFunc("/search/", server.SearchPage)
+	fmt.Println("Server running on http://localhost:3000/")
+	err := http.ListenAndServe(":3000", nil)
+	if err != nil {
 		log.Fatal(err)
 	}
 }
